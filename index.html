@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login & Registration</title>
+    <style>
+        /* Container and general styles */
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Tab buttons */
+        .tab-buttons {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        .tab-buttons button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab-buttons button.active {
+            color: #2196F3;
+            border-bottom: 2px solid #2196F3;
+        }
+
+        /* Tabs content */
+        .tab {
+            display: none;
+            padding: 20px;
+        }
+
+        .tab.active {
+            display: block;
+        }
+
+        /* Form groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Password strength */
+        .password-strength {
+            margin-top: 5px;
+        }
+
+        .password-strength-bar {
+            height: 5px;
+            background: #ddd;
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        /* Password requirements */
+        .password-requirements {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .requirement {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .requirement.met {
+            color: #4CAF50;
+        }
+
+        /* Buttons */
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #1976D2;
+        }
+
+        /* Message */
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .message.error {
+            display: block;
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .message.success {
+            display: block;
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tab-buttons">
+            <button onclick="showTab('register')" class="active">Register</button>
+            <button onclick="showTab('login')">Login</button>
+        </div>
+
+        <div id="register" class="tab active">
+            <h2>Create Account</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="register-username">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="register-password" oninput="checkPasswordStrength(this.value)">
+                <div class="password-strength">
+                    <div class="password-strength-bar"></div>
+                </div>
+            </div>
+
+            <div class="password-requirements">
+                <div id="length" class="requirement">• Minimum 12 characters</div>
+                <div id="uppercase" class="requirement">• At least 1 uppercase letter</div>
+                <div id="lowercase" class="requirement">• At least 1 lowercase letter</div>
+                <div id="number" class="requirement">• At least 1 number</div>
+                <div id="special" class="requirement">• At least 1 special character</div>
+            </div>
+
+            <button onclick="register()">Create Account</button>
+        </div>
+
+        <div id="login" class="tab">
+            <h2>Welcome Back</h2>
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="login-username">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="login-password">
+            </div>
+
+            <button onclick="login()">Login</button>
+        </div>
+
+        <div id="message" class="message"></div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-buttons button').forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function checkPasswordStrength(password) {
+            const requirements = {
+                length: password.length >= 12,
+                uppercase: /[A-Z]/.test(password),
+                lowercase: /[a-z]/.test(password),
+                number: /[0-9]/.test(password),
+                special: /[!@#$%^&*()_+\-=\[\]{};:,.<>?]/.test(password)
+            };
+
+            Object.keys(requirements).forEach(req => {
+                const element = document.getElementById(req);
+                if (requirements[req]) {
+                    element.classList.add('met');
+                } else {
+                    element.classList.remove('met');
+                }
+            });
+
+            const strength = Object.values(requirements).filter(Boolean).length;
+            const bar = document.querySelector('.password-strength-bar');
+            bar.style.width = `${strength * 20}%`;
+            bar.style.background = ['#f44336', '#ff9800', '#fdd835', '#7cb342', '#4caf50'][strength - 1];
+        }
+
+        async function register() {
+            const username = document.getElementById('register-username').value;
+            const password = document.getElementById('register-password').value;
+            const messageDiv = document.getElementById('message');
+
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                messageDiv.textContent = data.message;
+                messageDiv.className = `message ${data.success ? 'success' : 'error'}`;
+
+                if (data.success) {
+                    setTimeout(() => showTab('login'), 1500);
+                }
+            } catch (error) {
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
+            }
+        }
+
+        async function login() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+            const messageDiv = document.getElementById('message');
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                messageDiv.textContent = data.message;
+                messageDiv.className = `message ${data.success ? 'success' : 'error'}`;
+
+                if (data.success && data.redirect) {
+                    setTimeout(() => window.location.href = data.redirect, 1000);
+                }
+            } catch (error) {
+                messageDiv.textContent = 'An error occurred. Please try again.';
+                messageDiv.className = 'message error';
+            }
+        }
+    </script>
+</body>
+</html>

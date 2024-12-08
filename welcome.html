@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome Back</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .welcome-container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .welcome-header {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+        }
+        .welcome-message {
+            font-size: 1.2em;
+            color: #34495e;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logout-btn {
+            display: block;
+            width: 100px;
+            margin: 20px auto;
+            padding: 10px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            text-align: center;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <div class="welcome-container">
+        <div class="welcome-header">
+            <h1>Welcome Back, <span id="username">User</span>!</h1>
+        </div>
+        <div class="welcome-message">
+            You have successfully logged in to your secure account.
+        </div>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
+
+    <script>
+        // Get username from URL parameter and update the page
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username');
+            if (username) {
+                document.getElementById('username').textContent = username;
+            }
+        };
+    </script>
+</body>
+</html>
